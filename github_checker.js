@@ -88,7 +88,7 @@ async function checkRepoContents(repo) {
         hasGha = workflowsResponse.data.some(file => file.name.endsWith(".yml"));
       } catch (error) {
         if (error.response?.status !== 404) {
-          console.error(`⚠️ Error checking GitHub Actions for ${repo}: ${error.message}`);
+          console.error(`Error checking GitHub Actions for ${repo}: ${error.message}`);
         }
       }
     }
@@ -105,22 +105,22 @@ async function checkRepoContents(repo) {
 // Process repositories sequentially to avoid rate limits
 async function checkRepositories() {
   if (!fs.existsSync("seart_repos.json")) {
-    console.log("⚠️ No saved repository data found. Fetching from SEART API...");
+    console.log("no saved repository data found. Fetching from SEART API...");
     await fetchRepositories();
   }
 
   const repositories = JSON.parse(fs.readFileSync("seart_repos.json"));
   if (!repositories.length) {
-    console.log("⚠️ No repositories found.");
+    console.log("no repositories found.");
     return [];
   }
 
-  console.log(`🔍 Found ${repositories.length} repositories. Checking sequentially...`);
+  console.log(`Found ${repositories.length} repositories. Checking sequentially...`);
   const validRepos = [];
 
   for (let i = 0; i < repositories.length; i++) {
     const repo = repositories[i];
-    console.log(`📌 Processing ${i + 1}/${repositories.length}: ${repo.name}`);
+    console.log(`Processing ${i + 1}/${repositories.length}: ${repo.name}`);
 
     await waitIfNeeded();
     try {
@@ -151,15 +151,15 @@ async function checkRepositories() {
         });
       }
     } catch (error) {
-      console.error(`⚠️ Error processing ${repo.name}: ${error.message}`);
+      console.error(`Error processing ${repo.name}: ${error.message}`);
     }
 
     await new Promise(resolve => setTimeout(resolve, 500));
   }
 
-  console.log("\n✅ Final List of Valid Repositories:", validRepos);
+  console.log("Final List of Valid Repositories:", validRepos);
   fs.writeFileSync("results.json", JSON.stringify(validRepos, null, 2));
-  console.log("💾 Results saved.");
+  console.log("Results saved.");
   return validRepos;
 }
 
@@ -167,12 +167,12 @@ async function checkRepositories() {
 function countValidRepositories() {
   const resultsFile = "results.json";
   if (!fs.existsSync(resultsFile)) {
-    console.log("⚠️ No results file found.");
+    console.log("No results file found.");
     return;
   }
 
   const data = JSON.parse(fs.readFileSync(resultsFile));
-  console.log(`📊 Total Valid Repositories Found: ${data.length}`);
+  console.log(`Total Valid Repositories Found: ${data.length}`);
 }
 
 // Run the script
